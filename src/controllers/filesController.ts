@@ -37,11 +37,24 @@ class FilesController {
 
     static async getAll(req: Request, res: Response, next: NextFunction) {
         try {
-            const files = await getRepository(File)
-                .createQueryBuilder('file')
-                .leftJoinAndSelect('file.subfolder', 'fileSubfolder')
-                .leftJoinAndSelect('file.directory', 'fileDirectory')
-                .getMany()
+            let files: File[] = [];
+            // @ts-ignore
+            const searchString = req.query.search.toLowerCase();
+
+            if (searchString) {
+                files = await getRepository(File)
+                    .createQueryBuilder('file')
+                    .where(`MATCH(file.name) AGAINST ('${searchString}' IN BOOLEAN MODE)`)
+                    .leftJoinAndSelect('file.subfolder', 'fileSubfolder')
+                    .leftJoinAndSelect('file.directory', 'fileDirectory')
+                    .getMany()
+            } else {
+                files = await getRepository(File)
+                    .createQueryBuilder('file')
+                    .leftJoinAndSelect('file.subfolder', 'fileSubfolder')
+                    .leftJoinAndSelect('file.directory', 'fileDirectory')
+                    .getMany()
+            }
 
             return res.send(files);
         } catch (err) {
