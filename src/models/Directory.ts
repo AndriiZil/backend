@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Subfolder } from './Subfolder';
+import { File } from './File';
 
 @Entity()
 export class Directory {
@@ -14,5 +15,10 @@ export class Directory {
         onDelete: 'CASCADE'
     })
     subfolders: Subfolder[];
+
+    @OneToMany(() => File, file => file.directory, {
+        onDelete: 'CASCADE'
+    })
+    files: File[];
 
 }

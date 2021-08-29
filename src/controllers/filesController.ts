@@ -4,7 +4,7 @@ import { File } from '../models/File';
 
 class FilesController {
 
-    static async create(req: Request, res: Response, next: NextFunction) {
+    static async createFileSub(req: Request, res: Response, next: NextFunction) {
         try {
             const file = new File();
 
@@ -19,11 +19,28 @@ class FilesController {
         }
     }
 
+    static async createFileDir(req: Request, res: Response, next: NextFunction) {
+        try {
+            const file = new File();
+
+            file.name = req.body.name;
+            file.subfolder = null;
+            file.directory = req.params.directoryId;
+
+            await getRepository(File).save(file);
+
+            return res.send(file);
+        } catch (err) {
+            next(err);
+        }
+    }
+
     static async getAll(req: Request, res: Response, next: NextFunction) {
         try {
             const files = await getRepository(File)
                 .createQueryBuilder('file')
-                .leftJoinAndSelect('file.subfolder', 'subfolderId')
+                .leftJoinAndSelect('file.subfolder', 'fileSubfolder')
+                .leftJoinAndSelect('file.directory', 'fileDirectory')
                 .getMany()
 
             return res.send(files);
@@ -36,7 +53,8 @@ class FilesController {
         try {
             const file = await getRepository(File)
                 .createQueryBuilder('file')
-                .leftJoinAndSelect('file.subfolder', 'subfolderId')
+                .leftJoinAndSelect('file.subfolder', 'fileSubfolder')
+                .leftJoinAndSelect('file.directory', 'fileDirectory')
                 .where('file.id = :id', { id: req.params.id })
                 .getOne()
 

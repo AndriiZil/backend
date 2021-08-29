@@ -22,7 +22,8 @@ class DirectoriesController {
             const directories = await getRepository(Directory)
                 .createQueryBuilder('directory')
                 .leftJoinAndSelect('directory.subfolders', 'subfolders')
-                .leftJoinAndSelect('subfolders.files', 'files')
+                .leftJoinAndSelect('subfolders.files', 'subfolderfiles')
+                .leftJoinAndSelect('directory.files', 'directoryFiles')
                 .getMany();
 
             return res.send(directories);
