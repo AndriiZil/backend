@@ -3,7 +3,7 @@ import SubfoldersController from '../controllers/subfoldersController';
 
 const r = Router();
 
-r.post('/', SubfoldersController.create);
+r.post('/:directoryId/create', SubfoldersController.create);
 
 r.get('/', SubfoldersController.getAll);
 

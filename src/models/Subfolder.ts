@@ -14,7 +14,7 @@ export class Subfolder {
     @ManyToOne(() => Directory, directory => directory.subfolders, {
         onDelete: 'CASCADE'
     })
-    directory: Directory;
+    directory: Directory | string;
 
     @OneToMany(() => File, file => file.subfolder, {
         onDelete: 'CASCADE'

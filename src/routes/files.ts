@@ -3,7 +3,7 @@ import FilesController from '../controllers/filesController';
 
 const r = Router();
 
-r.post('/', FilesController.create);
+r.post('/:subfolderId/create', FilesController.create);
 
 r.get('/', FilesController.getAll);
 

@@ -13,6 +13,6 @@ export class File {
     @ManyToOne(() => Subfolder, subfolder => subfolder.files, {
         onDelete: 'CASCADE'
     })
-    subfolder: Subfolder;
+    subfolder: Subfolder | string;
 
 }

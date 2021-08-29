@@ -1,11 +1,17 @@
 import { Request, Response, NextFunction} from 'express';
+import {getRepository } from 'typeorm';
+import { Directory } from '../models/Directory';
 
 class DirectoriesController {
 
     static async create(req: Request, res: Response, next: NextFunction) {
         try {
+            const directory = new Directory();
+            directory.name = req.body.name;
 
-            return res.send('ok');
+            await getRepository(Directory).save(directory);
+
+            return res.status(201).send(directory);
         } catch (err) {
             next(err);
         }
@@ -13,8 +19,13 @@ class DirectoriesController {
 
     static async getAll(req: Request, res: Response, next: NextFunction) {
         try {
+            const directories = await getRepository(Directory)
+                .createQueryBuilder('directory')
+                .leftJoinAndSelect('directory.subfolders', 'subfolders')
+                .leftJoinAndSelect('subfolders.files', 'files')
+                .getMany();
 
-            return res.send('ok');
+            return res.send(directories);
         } catch (err) {
             next(err);
         }
@@ -22,8 +33,14 @@ class DirectoriesController {
 
     static async getById(req: Request, res: Response, next: NextFunction) {
         try {
+            const directory = await getRepository(Directory)
+                .createQueryBuilder('directory')
+                .leftJoinAndSelect('directory.subfolders', 'subfolders')
+                .leftJoinAndSelect('subfolders.files', 'files')
+                .where('directory.id = :id', { id: req.params.id })
+                .getOne();
 
-            return res.send('ok');
+            return res.send(directory);
         } catch (err) {
             next(err);
         }
